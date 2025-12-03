@@ -1,4 +1,5 @@
 import { FadeInView } from '@/components/FadeInView';
+import { OilMaintenanceCard } from '@/components/OilMaintenanceCard';
 import Colors from '@/constants/colors';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Calendar, Settings, Thermometer, Wind, Wrench, Zap } from 'lucide-react-native';
@@ -73,6 +74,15 @@ export default function HomeScreen() {
             <Text style={styles.statLabel}>Power Steering</Text>
           </View>
         </View>
+
+        {/* Oil Maintenance Card */}
+        <OilMaintenanceCard 
+          currentOdo={45230}
+          lastServiceOdo={42230}
+          serviceInterval={8000}
+          lastServiceDate="Oct 12, 2024"
+          oilType="Synthetic 5W-30"
+        />
 
         {/* Action Banner */}
         <Pressable style={styles.actionBanner} onPress={() => router.push('/book-service')}>

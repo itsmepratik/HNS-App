@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, Image, Platform, SafeAreaView } from 'react-native';
+import Colors from '@/constants/colors';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ArrowRight, Check, Settings, Wind, Thermometer, Zap } from 'lucide-react-native';
-import Colors from '@/constants/colors';
+import { ArrowRight, Check, Settings, Thermometer, Wind, Zap } from 'lucide-react-native';
+import React, { useRef, useState } from 'react';
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -136,7 +137,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="light" />
       
       {/* Top Navigation */}
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     padding: 20,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 40,
+    paddingBottom: 20,
   },
   primaryButton: {
     backgroundColor: Colors.dark.primary,

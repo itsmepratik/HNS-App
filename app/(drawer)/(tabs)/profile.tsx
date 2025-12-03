@@ -1,14 +1,14 @@
 import { FadeInView } from '@/components/FadeInView';
 import Colors from '@/constants/colors';
 import { useRouter } from 'expo-router';
-import { Bell, ChevronRight, HelpCircle, LogOut, Shield } from 'lucide-react-native';
+import { Bell, ChevronRight, HelpCircle, LogOut, QrCode, Shield } from 'lucide-react-native';
 import React from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Helper component for menu items
-const MenuItem = ({ icon: Icon, title }: { icon: any, title: string }) => (
-  <Pressable style={styles.menuItem}>
+const MenuItem = ({ icon: Icon, title, onPress }: { icon: any, title: string, onPress?: () => void }) => (
+  <Pressable style={styles.menuItem} onPress={onPress}>
     <View style={styles.menuIconBox}>
       <Icon size={20} color={Colors.dark.primary} />
     </View>
@@ -25,6 +25,8 @@ export default function ProfileScreen() {
       <FadeInView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.headerTitle}>Profile</Text>
+
+
 
           <View style={styles.profileCard}>
             <View style={styles.avatarContainer}>
@@ -62,6 +64,11 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.menuGroup}>
+            <MenuItem 
+              icon={QrCode} 
+              title="My Loyalty Card" 
+              onPress={() => router.push('/(drawer)/loyalty-card')}
+            />
             <MenuItem icon={Bell} title="Notifications" />
             <MenuItem icon={Shield} title="Privacy & Security" />
             <MenuItem icon={HelpCircle} title="Help & Support" />

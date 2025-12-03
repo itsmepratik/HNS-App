@@ -102,6 +102,13 @@ export default function DrawerLayout() {
             ),
           }}
         />
+        <Drawer.Screen
+          name="loyalty-card"
+          options={{
+            drawerItemStyle: { display: 'none' },
+            title: 'Loyalty Card',
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
