@@ -41,7 +41,7 @@ export default function OnboardingScreen() {
         animated: true,
       });
     } else {
-      router.replace('/(tabs)');
+      router.replace('/login');
     }
   };
 
@@ -142,7 +142,7 @@ export default function OnboardingScreen() {
       
       {/* Top Navigation */}
       <View style={styles.topNav}>
-        <Pressable style={styles.navButton} onPress={() => router.replace('/(tabs)')}>
+        <Pressable style={styles.navButton} onPress={() => router.replace('/login')}>
           <ArrowRight size={20} color={Colors.dark.text} style={{ transform: [{ rotate: '180deg' }] }} />
         </Pressable>
         
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.navButton} onPress={() => router.replace('/(tabs)')}>
+        <Pressable style={styles.navButton} onPress={() => router.replace('/login')}>
           <Text style={styles.skipText}>Skip</Text>
         </Pressable>
       </View>

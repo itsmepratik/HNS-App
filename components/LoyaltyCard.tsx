@@ -25,40 +25,40 @@ export function LoyaltyCard({
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.label}>HNS Rewards</Text>
-            <Text style={styles.userName}>{userName}</Text>
-          </View>
-          <View style={styles.pointsBadge}>
-            <Award size={16} color={Colors.dark.primary} />
-            <Text style={styles.pointsText}>{points.toLocaleString()} pts</Text>
-          </View>
-        </View>
+        <View style={styles.contentRow}>
+            {/* QR Code Section - Left */}
+            <View style={styles.qrContainer}>
+            <View style={styles.qrWrapper}>
+                {qrCodeSource ? (
+                <Image 
+                    source={qrCodeSource} 
+                    style={styles.qrImage} 
+                    resizeMode="contain"
+                />
+                ) : (
+                <View style={styles.qrPlaceholder}>
+                    <QrCode size={64} color={Colors.dark.text} />
+                </View>
+                )}
+            </View>
+            </View>
 
-        {/* QR Code Section */}
-        <View style={styles.qrContainer}>
-          <View style={styles.qrWrapper}>
-            {qrCodeSource ? (
-              <Image 
-                source={qrCodeSource} 
-                style={styles.qrImage} 
-                resizeMode="contain"
-              />
-            ) : (
-              <View style={styles.qrPlaceholder}>
-                <QrCode size={64} color={Colors.dark.text} />
-              </View>
-            )}
-          </View>
-          <Text style={styles.scanText}>Scan to earn points</Text>
-        </View>
+            {/* Info Section - Right */}
+            <View style={styles.infoContainer}>
+            <View>
+                <Text style={styles.label}>HNS Rewards</Text>
+                <Text style={styles.userName} numberOfLines={1} adjustsFontSizeToFit>{userName}</Text>
+                <View style={styles.pointsBadge}>
+                    <Award size={14} color={Colors.dark.primary} />
+                    <Text style={styles.pointsText}>{points.toLocaleString()} pts</Text>
+                </View>
+            </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.memberLabel}>Member Since</Text>
-          <Text style={styles.memberValue}>{memberSince}</Text>
+            <View style={styles.footer}>
+                <Text style={styles.memberLabel}>Member Since</Text>
+                <Text style={styles.memberValue}>{memberSince}</Text>
+            </View>
+            </View>
         </View>
       </LinearGradient>
     </View>
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 24,
     overflow: 'hidden',
-    marginBottom: 32,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -77,53 +76,25 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   gradient: {
-    padding: 24,
+    padding: 20,
   },
-  header: {
+  contentRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.dark.text,
-  },
-  pointsBadge: {
-    flexDirection: 'row',
+    gap: 20,
     alignItems: 'center',
-    backgroundColor: 'rgba(223, 255, 0, 0.1)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    gap: 6,
-  },
-  pointsText: {
-    color: Colors.dark.primary,
-    fontWeight: '700',
-    fontSize: 14,
   },
   qrContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    justifyContent: 'center',
   },
   qrWrapper: {
-    width: 160,
-    height: 160,
+    width: 120, // Slightly smaller container but fuller image
+    height: 120,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 12,
+    borderRadius: 16,
+    padding: 6, // Reduced padding significantly
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
   },
   qrImage: {
     width: '100%',
@@ -135,25 +106,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scanText: {
+  infoContainer: {
+    flex: 1,
+    height: 120, // Match QR height
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  label: {
+    fontSize: 10,
     color: Colors.dark.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.dark.text,
+    marginBottom: 8,
+  },
+  pointsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(223, 255, 0, 0.1)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 6,
+    alignSelf: 'flex-start',
+  },
+  pointsText: {
+    color: Colors.dark.primary,
+    fontWeight: '700',
     fontSize: 12,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingTop: 16,
+    paddingTop: 8,
+    marginTop: 8,
   },
   memberLabel: {
     color: Colors.dark.textSecondary,
-    fontSize: 12,
+    fontSize: 10,
   },
   memberValue: {
     color: Colors.dark.text,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 12,
   },
 });

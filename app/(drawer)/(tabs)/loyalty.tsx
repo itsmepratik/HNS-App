@@ -1,5 +1,6 @@
 import CustomDialog from '@/components/CustomDialog';
 import { FadeInView } from '@/components/FadeInView';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
 import Colors from '@/constants/colors';
 import { Gift, Star } from 'lucide-react-native';
 import React, { useState } from 'react';
@@ -59,7 +60,10 @@ export default function LoyaltyScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.headerTitle}>Loyalty Program</Text>
+          <View style={styles.header}>
+            <HamburgerMenu />
+            <Text style={styles.headerTitle}>Loyalty Program</Text>
+          </View>
           
           <View style={styles.pointsCard}>
             <View style={styles.pointsHeader}>
@@ -166,11 +170,16 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 20,
+  },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 20,
   },
   pointsCard: {
     backgroundColor: Colors.dark.cardHighlight,

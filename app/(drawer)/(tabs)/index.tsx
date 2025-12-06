@@ -1,4 +1,5 @@
 import { FadeInView } from '@/components/FadeInView';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { OilMaintenanceCard } from '@/components/OilMaintenanceCard';
 import Colors from '@/constants/colors';
 import { useRouter } from 'expo-router';
@@ -16,9 +17,12 @@ export default function HomeScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good Day,</Text>
-            <Text style={styles.userName}>Pratik Chakraborty</Text>
+          <View style={styles.headerLeft}>
+            <HamburgerMenu />
+            <View>
+              <Text style={styles.greeting}>Good Day,</Text>
+              <Text style={styles.userName}>Pratik Chakraborty</Text>
+            </View>
           </View>
           <View style={styles.notificationBadge}>
             <View style={styles.notificationDot} />
@@ -141,6 +145,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 32,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   greeting: {
     fontSize: 14,

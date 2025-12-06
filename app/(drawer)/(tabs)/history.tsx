@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar, CheckCircle2, DollarSign, Wrench } from 'lucide-react-native';
-import Colors from '@/constants/colors';
 import { FadeInView } from '@/components/FadeInView';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
+import Colors from '@/constants/colors';
+import { CheckCircle2, Wrench } from 'lucide-react-native';
+import React from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HISTORY_DATA = [
   {
@@ -37,6 +38,7 @@ export default function HistoryScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
         <View style={styles.header}>
+          <HamburgerMenu />
           <Text style={styles.headerTitle}>Service History</Text>
         </View>
 
@@ -85,6 +87,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.background,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
     paddingHorizontal: 20,
     paddingVertical: 16,
   },

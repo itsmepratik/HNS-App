@@ -1,12 +1,13 @@
 import Colors from '@/constants/colors';
 import { Drawer } from 'expo-router/drawer';
 import {
-    Calendar,
-    Car,
-    Clock,
-    HelpCircle,
-    Home,
-    Settings
+  Calendar,
+  Car,
+  Clock,
+  HelpCircle,
+  Home,
+  MapPin,
+  Settings
 } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -99,6 +100,16 @@ export default function DrawerLayout() {
             title: 'Support',
             drawerIcon: ({ color, size }) => (
               <HelpCircle size={22} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="station-finder"
+          options={{
+            drawerLabel: 'Station Finder',
+            title: 'Station Finder',
+            drawerIcon: ({ color, size }) => (
+              <MapPin size={22} color={color} />
             ),
           }}
         />

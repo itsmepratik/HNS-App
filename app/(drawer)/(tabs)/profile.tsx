@@ -1,8 +1,10 @@
 import { FadeInView } from '@/components/FadeInView';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
+import { LoyaltyModal } from '@/components/LoyaltyModal';
 import Colors from '@/constants/colors';
 import { useRouter } from 'expo-router';
 import { Bell, ChevronRight, HelpCircle, LogOut, QrCode, Shield } from 'lucide-react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,12 +21,24 @@ const MenuItem = ({ icon: Icon, title, onPress }: { icon: any, title: string, on
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
+
+  const userData = {
+    name: "Pratik Chakraborty",
+    points: 2450,
+    memberSince: "Oct 2023",
+    cardNumber: "HNS-8829-4455",
+    qrImage: require('@/assets/images/loyalty-qr.png')
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <View style={styles.header}>
+            <HamburgerMenu />
+            <Text style={styles.headerTitle}>Profile</Text>
+          </View>
 
 
 
@@ -67,7 +81,7 @@ export default function ProfileScreen() {
             <MenuItem 
               icon={QrCode} 
               title="My Loyalty Card" 
-              onPress={() => router.push('/(drawer)/loyalty-card')}
+              onPress={() => setShowLoyaltyModal(true)}
             />
             <MenuItem icon={Bell} title="Notifications" />
             <MenuItem icon={Shield} title="Privacy & Security" />
@@ -82,6 +96,12 @@ export default function ProfileScreen() {
           <Text style={styles.versionText}>Version 1.0.0</Text>
         </ScrollView>
       </FadeInView>
+      
+      <LoyaltyModal 
+        visible={showLoyaltyModal} 
+        onClose={() => setShowLoyaltyModal(false)}
+        userData={userData}
+      />
     </SafeAreaView>
   );
 }
@@ -94,11 +114,16 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 24,
+  },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 24,
   },
   profileCard: {
     flexDirection: 'row',
