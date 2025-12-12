@@ -1,5 +1,4 @@
 import Colors from '@/constants/colors';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -31,14 +30,12 @@ const AppleLogo = () => (
   </Svg>
 );
 
-export default function AuthSocialButtons() {
-  const router = useRouter();
+interface AuthSocialButtonsProps {
+  onGooglePress?: () => void;
+  onApplePress?: () => void;
+}
 
-  const handleSocialLogin = (provider: 'google' | 'apple') => {
-    // TODO: Implement social login logic
-    console.log(`Login with ${provider}`);
-  };
-
+export default function AuthSocialButtons({ onGooglePress, onApplePress }: AuthSocialButtonsProps) {
   return (
     <View style={styles.container}>
       {/* Divider */}
@@ -55,7 +52,7 @@ export default function AuthSocialButtons() {
             styles.socialButton,
             pressed && styles.socialButtonPressed,
           ]}
-          onPress={() => handleSocialLogin('google')}
+          onPress={onGooglePress}
         >
           <GoogleLogo />
           <Text style={styles.socialButtonText}>Google</Text>
@@ -66,7 +63,7 @@ export default function AuthSocialButtons() {
             styles.socialButton,
             pressed && styles.socialButtonPressed,
           ]}
-          onPress={() => handleSocialLogin('apple')}
+          onPress={onApplePress}
         >
           <AppleLogo />
           <Text style={styles.socialButtonText}>Apple</Text>
@@ -75,6 +72,7 @@ export default function AuthSocialButtons() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

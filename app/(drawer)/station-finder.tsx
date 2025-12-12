@@ -12,7 +12,7 @@ import {
     Search,
     X
 } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Dimensions,
     FlatList,
@@ -32,6 +32,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
+const CARD_HEIGHT = 370;
 const SPACING = 12;
 
 // Filter Options
@@ -101,6 +102,7 @@ export default function StationFinderScreen() {
   
   const mapRef = useRef<MapView>(null);
   const flatListRef = useRef<FlatList>(null);
+  const zoomTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filteredStations = SERVICE_CENTERS.filter(station => {
     const matchesSearch = 
@@ -114,6 +116,21 @@ export default function StationFinderScreen() {
 
     return matchesSearch && matchesFilters;
   });
+
+  // Reset carousel and selection when data changes (search or filter)
+  useEffect(() => {
+    if (filteredStations.length > 0) {
+        // Scroll to beginning
+        flatListRef.current?.scrollToIndex({ index: 0, animated: true });
+        
+        // Select first item to sync map
+        setSelectedStationId(filteredStations[0].id);
+        
+        // Optional: Animate map to first item?
+        // Maybe we just let the user tap, or we can auto-focus. 
+        // For now, let's just select it so pin turns green.
+    }
+  }, [filteredStations.length, searchQuery, selectedServices]); // Dependency on length/inputs ensures it triggers on change
 
   const handleCall = (phoneNumber: string) => {
     Linking.openURL(`tel:${phoneNumber}`);
@@ -152,11 +169,34 @@ export default function StationFinderScreen() {
     if (filteredStations[index]) {
       const station = filteredStations[index];
       setSelectedStationId(station.id);
+      
+      // Clear any pending zoom animation
+      if (zoomTimeoutRef.current) {
+        clearTimeout(zoomTimeoutRef.current);
+      }
+
+      // Step 1: Start "Fly over" (Zoom out + Pan)
+      // We aim for a higher point (0.06) with a long duration (1500ms)
+      // This initiates the "Zoom out slowly kicks in" feel.
       mapRef.current?.animateToRegion({
-        ...station.coordinates,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
+        latitude: station.coordinates.latitude,
+        longitude: station.coordinates.longitude,
+        latitudeDelta: 0.06, 
+        longitudeDelta: 0.06,
+      }, 1500);
+
+      // Step 2: "Connected" Landing
+      // We interrupt the first animation midway (at 700ms) to start zooming in.
+      // This overlaps the movements, removing the "stop" between animations.
+      // The map continues panning to the same target, but Zoom seamlessly reverses.
+      zoomTimeoutRef.current = setTimeout(() => {
+        mapRef.current?.animateToRegion({
+            latitude: station.coordinates.latitude,
+            longitude: station.coordinates.longitude,
+            latitudeDelta: 0.01, // Target street-level zoom
+            longitudeDelta: 0.01,
+          }, 1500); // Slow easing for "zoom in kicks in slowly"
+      }, 700);
     }
   };
 
@@ -273,7 +313,9 @@ export default function StationFinderScreen() {
                 renderItem={renderStationCard}
                 keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContent}
+                contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
+                overScrollMode="never"
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
                         <Text style={styles.emptyText}>No service centers found matching your filters.</Text>
@@ -282,35 +324,36 @@ export default function StationFinderScreen() {
             />
         ) : (
             <View style={styles.mapContainer}>
-                <MapView
-                    ref={mapRef}
-                    style={styles.map}
-                    provider={PROVIDER_DEFAULT}
-                    initialRegion={{
-                        latitude: 37.7849,
-                        longitude: -122.4294,
-                        latitudeDelta: 0.1,
-                        longitudeDelta: 0.1,
-                    }}
-                >
-                    {filteredStations.map((station) => (
-                        <Marker
-                            key={station.id}
-                            coordinate={station.coordinates}
-                            onPress={() => onMarkerPress(station)}
-                        >
-                            <View style={[
-                                styles.customMarker,
-                                selectedStationId === station.id && styles.selectedMarker
-                            ]}>
-                                <MapPin 
-                                    size={20} 
-                                    color={selectedStationId === station.id ? Colors.dark.primaryForeground : Colors.dark.text} 
-                                />
-                            </View>
-                        </Marker>
-                    ))}
-                </MapView>
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            provider={PROVIDER_DEFAULT}
+            initialRegion={{
+              latitude: 37.7849,
+              longitude: -122.4294,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
+            }}
+            mapPadding={{ top: 0, right: 0, bottom: CARD_HEIGHT + 20, left: 0 }}
+          >
+            {filteredStations.map((station) => (
+              <Marker
+                key={station.id}
+                coordinate={station.coordinates}
+                onPress={() => onMarkerPress(station)}
+              >
+                <View style={[
+                  styles.customMarker,
+                  selectedStationId === station.id && styles.selectedMarker
+                ]}>
+                  <MapPin 
+                    size={20} 
+                    color={selectedStationId === station.id ? Colors.dark.primaryForeground : Colors.dark.text} 
+                  />
+                </View>
+              </Marker>
+            ))}
+          </MapView>
                 
                 <View style={styles.carouselContainer}>
                     <FlatList
@@ -392,6 +435,8 @@ export default function StationFinderScreen() {
     </SafeAreaView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -517,7 +562,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.dark.border,
     width: '100%', 
-    height: 380, // Increased height to fit services
+    height: CARD_HEIGHT, // Increased height to fit services
   },
   imageContainer: {
     height: 160,

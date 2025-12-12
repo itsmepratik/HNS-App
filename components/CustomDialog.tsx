@@ -1,8 +1,14 @@
 import Colors from '@/constants/colors';
 import { BlurView } from 'expo-blur';
 import { AlertCircle, CheckCircle, Info, XCircle } from 'lucide-react-native';
-import React from 'react';
-import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { BackHandler, Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+    FadeIn,
+    FadeOut,
+    ZoomIn,
+    ZoomOut
+} from 'react-native-reanimated';
 
 interface CustomDialogProps {
   visible: boolean;
@@ -19,6 +25,9 @@ interface CustomDialogProps {
 
 const { width } = Dimensions.get('window');
 
+// Wrapper to animate the BlurView correctly
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
 export default function CustomDialog({
   visible,
   title,
@@ -27,6 +36,21 @@ export default function CustomDialog({
   actions = [],
   onClose,
 }: CustomDialogProps) {
+
+  // Handle hardware back button
+  useEffect(() => {
+    const onBackPress = () => {
+      if (visible) {
+        onClose?.();
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backHandler.remove();
+  }, [visible, onClose]);
+
   const getIcon = () => {
     switch (type) {
       case 'success':
@@ -40,57 +64,77 @@ export default function CustomDialog({
     }
   };
 
-  return (
-    <Modal
-      transparent
-      visible={visible}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
-        <View style={styles.dialogContainer}>
-          <View style={styles.iconContainer}>
-            {getIcon()}
-          </View>
-          
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+  // If not visible, we don't render anything. 
+  // Reanimated handles the exiting animation before unmounting.
+  if (!visible) return null;
 
-          <View style={styles.actionsContainer}>
-            {actions.map((action, index) => (
-              <Pressable
-                key={index}
-                style={[
-                  styles.button,
-                  action.style === 'cancel' && styles.buttonCancel,
-                  action.style === 'destructive' && styles.buttonDestructive,
-                  actions.length > 1 && { flex: 1 },
-                ]}
-                onPress={action.onPress}
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    action.style === 'cancel' && styles.buttonTextCancel,
-                    action.style === 'destructive' && styles.buttonTextDestructive,
+  return (
+    <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]} pointerEvents="box-none">
+      {/* Backdrop */}
+      <Animated.View 
+        entering={FadeIn.duration(250)} 
+        exiting={FadeOut.duration(200)}
+        style={StyleSheet.absoluteFill}
+      >
+         <View style={styles.overlayBackground}>
+             {/* We can use BlurView here but animating intensity is heavy. 
+                 Instead, we just fade in a dark blur view. */}
+             <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+         </View>
+      </Animated.View>
+
+      {/* Dialog Container */}
+      <View style={styles.centerContainer} pointerEvents="box-none"> 
+        <Animated.View
+          entering={ZoomIn.duration(200)}
+          exiting={ZoomOut.duration(150)}
+          style={styles.dialogContainer}
+        >
+            <View style={styles.iconContainer}>
+              {getIcon()}
+            </View>
+            
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.message}>{message}</Text>
+
+            <View style={styles.actionsContainer}>
+              {actions.map((action, index) => (
+                <Pressable
+                  key={index}
+                  style={({ pressed }) => [
+                    styles.button,
+                    action.style === 'cancel' && styles.buttonCancel,
+                    action.style === 'destructive' && styles.buttonDestructive,
+                    actions.length > 1 && { flex: 1 },
+                    pressed && { opacity: 0.8, transform: [{ scale: 0.98 }] }
                   ]}
+                  onPress={action.onPress}
                 >
-                  {action.text}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      action.style === 'cancel' && styles.buttonTextCancel,
+                      action.style === 'destructive' && styles.buttonTextDestructive,
+                    ]}
+                  >
+                    {action.text}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+        </Animated.View>
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  overlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+  },
+  centerContainer: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

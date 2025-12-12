@@ -1,9 +1,11 @@
+import { EditProfileModal } from '@/components/EditProfileModal';
 import { FadeInView } from '@/components/FadeInView';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { LoyaltyModal } from '@/components/LoyaltyModal';
 import Colors from '@/constants/colors';
+import { useClerk, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { Bell, ChevronRight, HelpCircle, LogOut, QrCode, Shield } from 'lucide-react-native';
+import { Bell, ChevronRight, HelpCircle, LogOut, Pencil, QrCode, Shield } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,12 +23,24 @@ const MenuItem = ({ icon: Icon, title, onPress }: { icon: any, title: string, on
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { signOut } = useClerk();
+  const { user } = useUser();
   const [showLoyaltyModal, setShowLoyaltyModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.replace('/(auth)/login');
+    } catch (err) {
+      console.error('Sign out error', err);
+    }
+  };
 
   const userData = {
-    name: "Pratik Chakraborty",
+    name: user?.fullName || "Valued Customer",
     points: 2450,
-    memberSince: "Oct 2023",
+    memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "Oct 2023",
     cardNumber: "HNS-8829-4455",
     qrImage: require('@/assets/images/loyalty-qr.png')
   };
@@ -34,24 +48,31 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+        >
           <View style={styles.header}>
             <HamburgerMenu />
             <Text style={styles.headerTitle}>Profile</Text>
           </View>
 
-
-
           <View style={styles.profileCard}>
             <View style={styles.avatarContainer}>
                <Image 
-                  source={{ uri: 'https://framerusercontent.com/images/DqEIq4ebFpQTvXG41Rjsc6ZbEL8.jpg?scale-down-to=512&width=576&height=576' }} 
+                  source={{ uri: user?.imageUrl || 'https://framerusercontent.com/images/DqEIq4ebFpQTvXG41Rjsc6ZbEL8.jpg?scale-down-to=512&width=576&height=576' }} 
                   style={styles.avatar}
                 />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.userName}>Pratik Chakraborty</Text>
-              <Text style={styles.userEmail}>hello@pratik.pp.ua</Text>
+              <View style={styles.nameRow}>
+                <Text style={styles.userName}>{userData.name}</Text>
+                <Pressable onPress={() => setShowEditProfileModal(true)} style={styles.editButton}>
+                  <Pencil size={16} color={Colors.dark.primary} />
+                </Pressable>
+              </View>
+              <Text style={styles.userEmail}>{user?.primaryEmailAddress?.emailAddress || 'hello@pratik.pp.ua'}</Text>
             </View>
           </View>
 
@@ -88,7 +109,7 @@ export default function ProfileScreen() {
             <MenuItem icon={HelpCircle} title="Help & Support" />
           </View>
 
-          <Pressable style={styles.logoutButton}>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
             <LogOut size={20} color={Colors.dark.error} />
             <Text style={styles.logoutText}>Log Out</Text>
           </Pressable>
@@ -101,6 +122,10 @@ export default function ProfileScreen() {
         visible={showLoyaltyModal} 
         onClose={() => setShowLoyaltyModal(false)}
         userData={userData}
+      />
+      <EditProfileModal
+        visible={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
       />
     </SafeAreaView>
   );
@@ -146,6 +171,17 @@ const styles = StyleSheet.create({
   },
   profileInfo: {
     justifyContent: 'center',
+    flex: 1, // Allow text to take available space
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  editButton: {
+    backgroundColor: Colors.dark.cardHighlight,
+    padding: 6,
+    borderRadius: 8,
   },
   userName: {
     fontSize: 24,

@@ -1,4 +1,5 @@
 import Colors from '@/constants/colors';
+import { useOnboardingStatus } from '@/hooks/useOnboardingStatus';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowRight, Check, Settings, Thermometer, Wind, Zap } from 'lucide-react-native';
@@ -33,16 +34,23 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { completeOnboarding } = useOnboardingStatus();
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,
         animated: true,
       });
     } else {
-      router.replace('/login');
+      await completeOnboarding();
+      router.replace('/(auth)/login');
     }
+  };
+
+  const handleSkip = async () => {
+    await completeOnboarding();
+    router.replace('/(auth)/login');
   };
 
   const renderItem = ({ item, index }: { item: typeof SLIDES[0], index: number }) => {
@@ -158,7 +166,7 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.navButton} onPress={() => router.replace('/login')}>
+        <Pressable style={styles.navButton} onPress={handleSkip}>
           <Text style={styles.skipText}>Skip</Text>
         </Pressable>
       </View>

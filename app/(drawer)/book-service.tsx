@@ -54,7 +54,11 @@ export default function BookServiceScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView 
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+        >
           <FadeInView>
             <Text style={styles.sectionLabel}>Select Service</Text>
             <View style={styles.serviceGrid}>

@@ -46,6 +46,8 @@ export default function HistoryScreen() {
           data={HISTORY_DATA}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>

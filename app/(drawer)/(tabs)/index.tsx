@@ -2,6 +2,7 @@ import { FadeInView } from '@/components/FadeInView';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { OilMaintenanceCard } from '@/components/OilMaintenanceCard';
 import Colors from '@/constants/colors';
+import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Calendar, Settings, Thermometer, Wind, Wrench, Zap } from 'lucide-react-native';
 import React from 'react';
@@ -10,74 +11,83 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { user } = useUser();
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never" // Optional: helps with "smooth" feel on Android sometimes, or standard
+        >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <HamburgerMenu />
             <View>
               <Text style={styles.greeting}>Good Day,</Text>
-              <Text style={styles.userName}>Pratik Chakraborty</Text>
+              <Text style={styles.userName}>{user?.fullName || 'Driver'}</Text>
             </View>
           </View>
           <View style={styles.notificationBadge}>
             <View style={styles.notificationDot} />
             <Pressable style={styles.profileButton} onPress={() => router.push('/(tabs)/profile')}>
                <Image 
-                source={{ uri: 'https://framerusercontent.com/images/DqEIq4ebFpQTvXG41Rjsc6ZbEL8.jpg?scale-down-to=512&width=576&height=576' }} 
+                source={{ uri: user?.imageUrl }} 
                 style={styles.avatar}
               />
             </Pressable>
           </View>
         </View>
 
-        {/* Vehicle Status Card */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Vehicle Status</Text>
-          <Text style={styles.vehicleName}>Tesla Model 3</Text>
-        </View>
+        {/* Vehicle Status Card (Hidden) */}
+        {false && (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Vehicle Status</Text>
+              <Text style={styles.vehicleName}>Tesla Model 3</Text>
+            </View>
 
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
-              <Settings size={20} color={Colors.dark.textSecondary} />
-            </View>
-            <Text style={styles.statValue}>90<Text style={styles.percent}>%</Text></Text>
-            <Text style={styles.statLabel}>Rear Brakes</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
-              <Wind size={20} color={Colors.dark.textSecondary} />
-            </View>
-            <Text style={styles.statValue}>75<Text style={styles.percent}>%</Text></Text>
-            <Text style={styles.statLabel}>Air Filter</Text>
-          </View>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <View style={styles.statHeader}>
+                  <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
+                  <Settings size={20} color={Colors.dark.textSecondary} />
+                </View>
+                <Text style={styles.statValue}>90<Text style={styles.percent}>%</Text></Text>
+                <Text style={styles.statLabel}>Rear Brakes</Text>
+              </View>
+              
+              <View style={styles.statCard}>
+                <View style={styles.statHeader}>
+                  <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
+                  <Wind size={20} color={Colors.dark.textSecondary} />
+                </View>
+                <Text style={styles.statValue}>75<Text style={styles.percent}>%</Text></Text>
+                <Text style={styles.statLabel}>Air Filter</Text>
+              </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
-              <Thermometer size={20} color={Colors.dark.textSecondary} />
-            </View>
-            <Text style={styles.statValue}>83<Text style={styles.percent}>%</Text></Text>
-            <Text style={styles.statLabel}>Cabin Filter</Text>
-          </View>
+              <View style={styles.statCard}>
+                <View style={styles.statHeader}>
+                  <View style={[styles.statusDot, { backgroundColor: Colors.dark.success }]} />
+                  <Thermometer size={20} color={Colors.dark.textSecondary} />
+                </View>
+                <Text style={styles.statValue}>83<Text style={styles.percent}>%</Text></Text>
+                <Text style={styles.statLabel}>Cabin Filter</Text>
+              </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={[styles.statusDot, { backgroundColor: '#EAB308' }]} />
-              <Zap size={20} color={Colors.dark.textSecondary} />
+              <View style={styles.statCard}>
+                <View style={styles.statHeader}>
+                  <View style={[styles.statusDot, { backgroundColor: '#EAB308' }]} />
+                  <Zap size={20} color={Colors.dark.textSecondary} />
+                </View>
+                <Text style={styles.statValue}>47<Text style={styles.percent}>%</Text></Text>
+                <Text style={styles.statLabel}>Power Steering</Text>
+              </View>
             </View>
-            <Text style={styles.statValue}>47<Text style={styles.percent}>%</Text></Text>
-            <Text style={styles.statLabel}>Power Steering</Text>
-          </View>
-        </View>
+          </>
+        )}
 
         {/* Oil Maintenance Card */}
         <OilMaintenanceCard 

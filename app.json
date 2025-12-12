@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "HNS Automotive App",
-    "slug": "hns-automotive-app",
+    "slug": "hns",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,11 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.hns_automotive_app"
+      "package": "app.rork.hns_automotive_app",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -36,10 +40,25 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow HNS Automotive App to use Face ID for quick sign-in."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": "https://rork.com/"
+      },
+      "eas": {
+        "projectId": "228bd249-9ca5-40e1-b2b9-47284e5abe8b"
+      }
+    },
+    "owner": "pratikckb"
   }
 }

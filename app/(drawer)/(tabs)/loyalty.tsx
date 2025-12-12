@@ -59,7 +59,11 @@ export default function LoyaltyScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <FadeInView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+        >
           <View style={styles.header}>
             <HamburgerMenu />
             <Text style={styles.headerTitle}>Loyalty Program</Text>

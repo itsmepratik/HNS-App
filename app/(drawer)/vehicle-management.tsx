@@ -72,7 +72,11 @@ export default function VehicleManagementScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView 
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          overScrollMode="never"
+        >
           <FadeInView>
             {vehicles.map((vehicle) => (
               <View key={vehicle.id} style={styles.vehicleCard}>
